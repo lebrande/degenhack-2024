@@ -1,22 +1,15 @@
-import { http, createConfig } from 'wagmi'
-import { mainnet, sepolia } from 'wagmi/chains'
-import { coinbaseWallet, injected, walletConnect } from 'wagmi/connectors'
+import { Chain, getDefaultConfig } from '@rainbow-me/rainbowkit';
+import { mainnet } from 'wagmi/chains'
 
-export const config = createConfig({
-  chains: [mainnet, sepolia],
-  connectors: [
-    injected(),
-    coinbaseWallet({ appName: 'Create Wagmi' }),
-    walletConnect({ projectId: import.meta.env.VITE_WC_PROJECT_ID }),
-  ],
-  transports: {
-    [mainnet.id]: http(),
-    [sepolia.id]: http(),
+const fork = {
+  ...mainnet,
+  rpcUrls: {
+    default: { http: [import.meta.env.VITE_RPC_URL] },
   },
-})
+} as const satisfies Chain;
 
-declare module 'wagmi' {
-  interface Register {
-    config: typeof config
-  }
-}
+export const config = getDefaultConfig({
+  appName: 'Degen Hub',
+  projectId: import.meta.env.VITE_WC_PROJECT_ID,
+  chains: [fork],
+});

@@ -1,13 +1,18 @@
-import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import { useAccount, useBalance } from 'wagmi'
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { formatEther } from 'viem';
 
 function App() {
-  const account = useAccount()
-  const { connectors, connect, status, error } = useConnect()
-  const { disconnect } = useDisconnect()
+  const account = useAccount();
+  const balance = useBalance({
+    address: account.address,
+  });
 
   return (
     <>
       <div>
+        <ConnectButton />
+
         <h2>Account</h2>
 
         <div>
@@ -16,28 +21,9 @@ function App() {
           addresses: {JSON.stringify(account.addresses)}
           <br />
           chainId: {account.chainId}
+          <br />
+          balance: {formatEther(balance.data?.value || 0n)}
         </div>
-
-        {account.status === 'connected' && (
-          <button type="button" onClick={() => disconnect()}>
-            Disconnect
-          </button>
-        )}
-      </div>
-
-      <div>
-        <h2>Connect</h2>
-        {connectors.map((connector) => (
-          <button
-            key={connector.uid}
-            onClick={() => connect({ connector })}
-            type="button"
-          >
-            {connector.name}
-          </button>
-        ))}
-        <div>{status}</div>
-        <div>{error?.message}</div>
       </div>
     </>
   )
