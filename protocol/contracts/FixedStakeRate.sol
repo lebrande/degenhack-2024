@@ -10,6 +10,8 @@ import {IERC20} from "@aave/core-v3/contracts/dependencies/openzeppelin/contract
 
 contract FixedStakeRate is FlashLoanSimpleReceiverBase {
     address payable owner;
+    address constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+    uint16 constant MAX_LTV = 7850; // 4 decimals - 0.7850
 
     constructor(
         address _addressProvider
@@ -24,15 +26,19 @@ contract FixedStakeRate is FlashLoanSimpleReceiverBase {
         address initiator,
         bytes calldata params
     ) external override returns (bool) {
-        // we have the borrowed founds
-        // custom  logic
-
-        // lend token
-
-        // borrow token - 20%
-
         uint256 amountOwed = amount + premium;
-        IERC20(asset).approve(address(POOL), amountOwed);
+
+        IERC20(asset).approve(address(POOL), amountOwed * 2);
+
+        POOL.supply(asset, amount, address(this), 0);
+
+        POOL.borrow(
+            asset,
+            amount * MAX_LTV / 10000,
+            2,
+            0,
+            address(this)
+        );
 
         return true;
     }

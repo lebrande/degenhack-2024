@@ -3,10 +3,14 @@ import { Box, Card, CardBody, CardHeader, Heading, Stack, StackDivider, Text } f
 import { useWEthBalance } from '../hooks/useWEthBalance';
 import { useWstWEthBalance } from '../hooks/useWstWEthBalance';
 import { FIXED_STAKE_RATE_ADDRESS } from '../contracts/FixedStakeRate';
+import { useSuppliedWstEthBalance } from '../hooks/useSuppliedWstEthBalance';
+import { useBorrowedWstEthBalance } from '../hooks/useBorrowedWstEthBalance';
 
 export const Account = () => {
   const wEthBalance = useWEthBalance(FIXED_STAKE_RATE_ADDRESS);
   const wstEthBalance = useWstWEthBalance(FIXED_STAKE_RATE_ADDRESS);
+  const suppliedWstEthBalance = useSuppliedWstEthBalance(FIXED_STAKE_RATE_ADDRESS);
+  const borrowedWstEthBalance = useBorrowedWstEthBalance(FIXED_STAKE_RATE_ADDRESS);
 
   return (
     <Card>
@@ -38,6 +42,22 @@ export const Account = () => {
             </Heading>
             <Text pt='2' fontSize='sm'>
               {formatEther(wstEthBalance.data || 0n)}
+            </Text>
+          </Box>
+          <Box>
+            <Heading size='xs' textTransform='uppercase'>
+              Supplied wstETH + Interest
+            </Heading>
+            <Text pt='2' fontSize='sm'>
+              {formatEther(suppliedWstEthBalance.data || 0n)}
+            </Text>
+          </Box>
+          <Box>
+            <Heading size='xs' textTransform='uppercase'>
+              Borrowed wstETH + Interest
+            </Heading>
+            <Text pt='2' fontSize='sm'>
+              {formatEther(borrowedWstEthBalance.data || 0n)}
             </Text>
           </Box>
         </Stack>

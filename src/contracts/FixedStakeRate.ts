@@ -1,3 +1,3 @@
 import { Address } from "viem";
 
-export const FIXED_STAKE_RATE_ADDRESS: Address = '0x1f60a81384953ffff152baae9a8fa677e81a9da3';
+export const FIXED_STAKE_RATE_ADDRESS: Address = '0x5da89dd46f22ff7e66228c127fe987038eb080f3';
