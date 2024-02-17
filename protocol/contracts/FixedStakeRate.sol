@@ -4,23 +4,35 @@ pragma solidity ^0.8.10;
 import {FlashLoanSimpleReceiverBase} from "@aave/core-v3/contracts/flashloan/base/FlashLoanSimpleReceiverBase.sol";
 import {IPoolAddressesProvider} from "@aave/core-v3/contracts/interfaces/IPoolAddressesProvider.sol";
 
-import '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
+import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 
 interface IERC20 {
     function totalSupply() external view returns (uint256);
     function balanceOf(address account) external view returns (uint256);
-    function transfer(address recipient, uint256 amount) external returns (bool);
-    function allowance(address owner, address spender) external view returns (uint256);
+    function transfer(
+        address recipient,
+        uint256 amount
+    ) external returns (bool);
+    function allowance(
+        address owner,
+        address spender
+    ) external view returns (uint256);
     function approve(address spender, uint256 amount) external returns (bool);
-    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
+    function transferFrom(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) external returns (bool);
 }
 
 // Uncomment this line to use console.log
 // import "hardhat/console.sol";
 
 contract FixedStakeRate is FlashLoanSimpleReceiverBase {
-    address public constant uniswapSwapRouterAddress = 0xE592427A0AEce92De3Edee1F18E0157C05861564;
-    ISwapRouter public immutable swapRouter = ISwapRouter(uniswapSwapRouterAddress);
+    address public constant uniswapSwapRouterAddress =
+        0xE592427A0AEce92De3Edee1F18E0157C05861564;
+    ISwapRouter public immutable swapRouter =
+        ISwapRouter(uniswapSwapRouterAddress);
 
     address payable owner;
     address constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
@@ -58,7 +70,7 @@ contract FixedStakeRate is FlashLoanSimpleReceiverBase {
             WETH,
             // amount * MAX_LTV / 10000,
             // temporary assume that we borrow just 50% amount
-            amount * 10 / 100,
+            (amount * 10) / 100,
             2,
             0,
             address(this)
@@ -75,7 +87,7 @@ contract FixedStakeRate is FlashLoanSimpleReceiverBase {
         address receiverAddress = address(this);
         address asset = _token;
         uint256 amount = _amount;
-        bytes memory params = '';
+        bytes memory params = "";
         uint16 referralCode = 0;
 
         POOL.flashLoanSimple(
@@ -97,17 +109,22 @@ contract FixedStakeRate is FlashLoanSimpleReceiverBase {
     }
 
     modifier onlyOwner() {
-        require(msg.sender == owner, 'Only the contract owner can call this function');
+        require(
+            msg.sender == owner,
+            "Only the contract owner can call this function"
+        );
         _;
     }
 
     receive() external payable {}
 
-    function swapWEthToWstEth(uint256 amountIn) external returns (uint256 amountOut) {
+    function swapWEthToWstEth(
+        uint256 amountIn
+    ) external returns (uint256 amountOut) {
         wEthToken.approve(address(swapRouter), amountIn * 999);
 
-        ISwapRouter.ExactInputSingleParams memory params =
-            ISwapRouter.ExactInputSingleParams({
+        ISwapRouter.ExactInputSingleParams memory params = ISwapRouter
+            .ExactInputSingleParams({
                 tokenIn: WETH,
                 tokenOut: wstETH,
                 fee: poolFee,
@@ -124,8 +141,8 @@ contract FixedStakeRate is FlashLoanSimpleReceiverBase {
     function dev_revertSwap() external returns (uint256 amountOut) {
         wstEthToken.approve(address(swapRouter), dev_lastSwapWstEth * 999);
 
-        ISwapRouter.ExactInputSingleParams memory params =
-            ISwapRouter.ExactInputSingleParams({
+        ISwapRouter.ExactInputSingleParams memory params = ISwapRouter
+            .ExactInputSingleParams({
                 tokenIn: wstETH,
                 tokenOut: WETH,
                 fee: poolFee,
