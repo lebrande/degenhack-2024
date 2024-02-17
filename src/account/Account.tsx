@@ -4,13 +4,13 @@ import { useWEthBalance } from '../hooks/useWEthBalance';
 import { useWstWEthBalance } from '../hooks/useWstWEthBalance';
 import { FIXED_STAKE_RATE_ADDRESS } from '../contracts/FixedStakeRate';
 import { useSuppliedWstEthBalance } from '../hooks/useSuppliedWstEthBalance';
-import { useBorrowedWstEthBalance } from '../hooks/useBorrowedWstEthBalance';
+import { useBorrowedWEthBalance } from '../hooks/useBorrowedWEthBalance';
 
 export const Account = () => {
   const wEthBalance = useWEthBalance(FIXED_STAKE_RATE_ADDRESS);
   const wstEthBalance = useWstWEthBalance(FIXED_STAKE_RATE_ADDRESS);
   const suppliedWstEthBalance = useSuppliedWstEthBalance(FIXED_STAKE_RATE_ADDRESS);
-  const borrowedWstEthBalance = useBorrowedWstEthBalance(FIXED_STAKE_RATE_ADDRESS);
+  const borrowedWEthBalance = useBorrowedWEthBalance(FIXED_STAKE_RATE_ADDRESS);
 
   return (
     <Card>
@@ -54,10 +54,10 @@ export const Account = () => {
           </Box>
           <Box>
             <Heading size='xs' textTransform='uppercase'>
-              Borrowed wstETH + Interest
+              Borrowed WETH + Interest
             </Heading>
             <Text pt='2' fontSize='sm'>
-              {formatEther(borrowedWstEthBalance.data || 0n)}
+              {formatEther(borrowedWEthBalance.data || 0n)}
             </Text>
           </Box>
         </Stack>

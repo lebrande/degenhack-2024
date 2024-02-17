@@ -1,4 +1,5 @@
 import { Account } from './account/Account';
+import { RevertSwap } from './dev_revertSwap/RevertSwap';
 import { FixedStakeRate } from './fixedStakeRate/FixedStakeRate';
 import { Navbar } from './navbar/Navbar';
 import { Box, SimpleGrid } from '@chakra-ui/react';
@@ -10,6 +11,7 @@ function App() {
       <SimpleGrid columns={2} spacing={10} maxW="60rem" mx="auto" my="4rem">
         <Account />
         <FixedStakeRate />
+        <RevertSwap />
       </SimpleGrid>
     </Box>
   )

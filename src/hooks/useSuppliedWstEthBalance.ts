@@ -3,12 +3,12 @@ import { Address, erc20Abi } from "viem";
 import { useReadContract } from "wagmi";
 
 export const useSuppliedWstEthBalance = (accountAddress: Address) => {
-  const wEthBalance = useReadContract({
+  const wstEthBalance = useReadContract({
     abi: erc20Abi,
     functionName: 'balanceOf',
     address: AaveV3Ethereum.ASSETS.wstETH.A_TOKEN,
     args: [accountAddress],
   });
 
-  return wEthBalance;
+  return wstEthBalance;
 }
