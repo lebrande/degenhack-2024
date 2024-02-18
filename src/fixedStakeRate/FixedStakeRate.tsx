@@ -1,59 +1,59 @@
-import { Button, Card, CardBody, CardHeader, Heading, Stack, StackDivider } from "@chakra-ui/react";
-import { DepositControl } from "./DepositControl";
-import { useOpenFixedStakeRatePosition } from "../hooks/useOpenFixedStakeRatePosition";
-import { useState } from "react";
-import { Address, parseEther } from "viem";
+import { Box, Button, SimpleGrid } from "@chakra-ui/react";
+import { Account } from "./Account";
+import { OpenFixedStakeRatePosition } from "./OpenFixedStakeRatePosition";
+import { ApproveDebtDelegation } from "./ApproveDebtDelegation";
+import { Address } from "viem";
+import { FIXED_STAKE_RATE_ADDRESS } from "../contracts/FixedStakeRate";
+import { RevertSwap } from "../dev_revertSwap/RevertSwap";
+import { ApproveOpenPosition } from "./ApproveOpenPosition";
+import { useAccount } from "wagmi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 interface Props {
-  accountAddress: Address;
+  goToDashboard: () => void;
 }
 
 export const FixedStakeRate = ({
-  accountAddress,
+  goToDashboard,
 }: Props) => {
-  const [depositAmount, setDepositAmount] = useState(0);
-  const {
-    execute,
-    hash,
-    isPending,
-    isConfirmed,
-    isConfirming,
-    error,
-  } = useOpenFixedStakeRatePosition({
-    depositAmount: parseEther(depositAmount.toString()),
-  });
-
-  console.log(error);
-  
+  const { address: accountAddress } = useAccount();
 
   return (
-    <Card>
-      <CardHeader>
-        <Heading size='md'>Fixed Rate Leveraged Staking</Heading>
-      </CardHeader>
-
-      <CardBody>
-        <Stack divider={<StackDivider />} spacing='4'>
-          <DepositControl
-            depositAmount={depositAmount}
-            setDepositAmount={setDepositAmount}
-            accountAddress={accountAddress}
-          />
-          <Button
-            isLoading={isPending}
-            colorScheme='blue'
-            onClick={execute}
-          >
-            {isPending ? 'Confirming...' : 'Open position'}
-          </Button>
-          {hash && <div>Transaction Hash: {hash}</div>}
-          {isConfirming && <div>Waiting for confirmation...</div>}
-          {isConfirmed && <div>Transaction confirmed.</div>}
-          {error && (
-            <div>Error: {error.shortMessage || error.message}</div>
-          )}
-        </Stack>
-      </CardBody>
-    </Card>
+    <Box maxW="60rem" mx="auto" py="4rem">
+      <Button onClick={goToDashboard} mb={'2rem'}>
+        Go to dashboard
+      </Button>
+      {accountAddress && (
+        <Form accountAddress={accountAddress} />
+      )}
+      {!accountAddress && (
+        <ConnectButton />
+      )}
+    </Box>
   );
 };
+
+interface FormProps {
+  accountAddress: Address;
+}
+
+const Form = ({
+  accountAddress,
+}: FormProps) => {
+  return (
+    <SimpleGrid columns={2} spacing={10}>
+      <Account
+        accountAddress={FIXED_STAKE_RATE_ADDRESS}
+        title="Contract balances"
+      />
+      <Account
+        accountAddress={accountAddress}
+        title="Wallet balances"
+      />
+      <ApproveOpenPosition />
+      <ApproveDebtDelegation />
+      <OpenFixedStakeRatePosition accountAddress={accountAddress} />
+      <RevertSwap />
+    </SimpleGrid>
+  );
+}

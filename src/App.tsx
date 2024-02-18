@@ -1,37 +1,23 @@
-import { useAccount } from 'wagmi';
-import { Account } from './account/Account';
-import { RevertSwap } from './dev_revertSwap/RevertSwap';
-import { FixedStakeRate } from './fixedStakeRate/FixedStakeRate';
 import { Navbar } from './navbar/Navbar';
-import { Box, SimpleGrid } from '@chakra-ui/react';
-import { ApproveOpenPosition } from './approveOpenPosition/ApproveOpenPosition';
-import { FIXED_STAKE_RATE_ADDRESS } from './contracts/FixedStakeRate';
-import { ApproveDebtDelegation } from './approveDebtDelegation/ApproveDebtDelegation';
+import { Box } from '@chakra-ui/react';
+import { Dashboard } from './dashboard/Dashboard';
+import { FixedStakeRate } from './fixedStakeRate/FixedStakeRate';
+import { useState } from 'react';
 
 function App() {
-  const { address } = useAccount();
+  const [isDashboard, setIsDashboard] = useState(true);
+  const goToProduct = () => setIsDashboard(false);
+  const goToDashboard = () => setIsDashboard(true);
 
   return (
     <Box minH="100vh">
       <Navbar />
-      <SimpleGrid columns={2} spacing={10} maxW="60rem" mx="auto" py="4rem">
-        {address && (
-          <>
-            <Account
-              accountAddress={FIXED_STAKE_RATE_ADDRESS}
-              title="Contract balances"
-            />
-            <Account
-              accountAddress={address}
-              title="Wallet balances"
-            />
-            <ApproveOpenPosition />
-            <ApproveDebtDelegation />
-            <FixedStakeRate accountAddress={address} />
-          </>
-        )}
-        <RevertSwap />
-      </SimpleGrid>
+      {isDashboard && <Dashboard goToProduct={goToProduct} />}
+      {!isDashboard && (
+        <FixedStakeRate
+          goToDashboard={goToDashboard}
+        />
+      )}
     </Box>
   )
 }
