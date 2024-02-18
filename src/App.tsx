@@ -14,7 +14,7 @@ function App() {
   return (
     <Box minH="100vh">
       <Navbar />
-      <SimpleGrid columns={2} spacing={10} maxW="60rem" mx="auto" my="4rem">
+      <SimpleGrid columns={2} spacing={10} maxW="60rem" mx="auto" py="4rem">
         {address && (
           <>
             <Account

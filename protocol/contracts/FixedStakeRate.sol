@@ -6,29 +6,15 @@ import {IPoolAddressesProvider} from "@aave/core-v3/contracts/interfaces/IPoolAd
 
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 
-interface IERC20 {
-    function totalSupply() external view returns (uint256);
-    function balanceOf(address account) external view returns (uint256);
-    function transfer(
-        address recipient,
-        uint256 amount
-    ) external returns (bool);
-    function allowance(
-        address owner,
-        address spender
-    ) external view returns (uint256);
-    function approve(address spender, uint256 amount) external returns (bool);
-    function transferFrom(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) external returns (bool);
-}
+import "./types.sol";
 
 // Uncomment this line to use console.log
 // import "hardhat/console.sol";
 
 contract FixedStakeRate is FlashLoanSimpleReceiverBase {
+    address public constant iporRouter = 0x16d104009964e694761C0bf09d7Be49B7E3C26fd;
+    IAmmOpenSwapServiceStEth public immutable iporSwapService = IAmmOpenSwapServiceStEth(iporRouter);
+
     address public constant uniswapSwapRouterAddress =
         0xE592427A0AEce92De3Edee1F18E0157C05861564;
     ISwapRouter public immutable swapRouter =
@@ -46,6 +32,8 @@ contract FixedStakeRate is FlashLoanSimpleReceiverBase {
     IERC20 public wstEthToken = IERC20(wstETH);
 
     uint256 public dev_lastSwapWstEth;
+
+    RiskIndicatorsInputs public riskIndicatorsInputs;
 
     constructor(
         address _addressProvider
@@ -80,11 +68,35 @@ contract FixedStakeRate is FlashLoanSimpleReceiverBase {
             IERC20(WETH).balanceOf(address(this))
         );
 
+        uint256 leverage = 400 * 1e18;
+
+        // for receiveFixed - short
+        // uint256 acceptableFixedInterestRate = 0; 
+
+        // for payFixed - long
+        uint256 acceptableFixedInterestRate = 20 * 1e18; 
+
+        IERC20(asset).approve(address(iporSwapService), amountOwed * 999);
+
+        // iporSwapService.openSwapReceiveFixed28daysStEth(
+        iporSwapService.openSwapPayFixed28daysStEth(
+            owner,
+            wstETH,
+            1 ether,
+            acceptableFixedInterestRate,
+            leverage,
+            riskIndicatorsInputs
+        );
+
         return true;
     }
 
-    function openPosition(uint256 _amount) public {
+    function openPosition(
+        uint256 _amount,
+        RiskIndicatorsInputs calldata _riskIndicatorsInputs
+    ) public {
         IERC20(wstETH).transferFrom(msg.sender, address(this), _amount);
+        riskIndicatorsInputs = _riskIndicatorsInputs;
 
         address receiverAddress = address(this);
         address asset = wstETH;
