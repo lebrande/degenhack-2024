@@ -1,5 +1,5 @@
 import { type BaseError, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
-import FixedStakeRate from '../../protocol/artifacts/contracts/FixedStakeRate.sol/FixedStakeRate.json'
+import FixedStakeRate from '../abi/FixedStakeRate.json';
 import { FIXED_STAKE_RATE_ADDRESS } from "../contracts/FixedStakeRate";
 
 export const dev_useRevertSwap = () => {
