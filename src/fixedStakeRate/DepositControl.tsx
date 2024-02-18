@@ -1,18 +1,19 @@
 import { Box, Flex, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text } from "@chakra-ui/react";
-import { formatEther } from "viem";
-import { FIXED_STAKE_RATE_ADDRESS } from "../contracts/FixedStakeRate";
+import { Address, formatEther } from "viem";
 import { useWstWEthBalance } from "../hooks/useWstWEthBalance";
 
 interface Props {
   depositAmount: number;
-  setDepositAmount: (depositAmount: number) => void
+  setDepositAmount: (depositAmount: number) => void;
+  accountAddress: Address;
 }
 
 export const DepositControl = ({
   depositAmount,
   setDepositAmount,
+  accountAddress,
 }: Props) => {
-  const wEthBalance = useWstWEthBalance(FIXED_STAKE_RATE_ADDRESS);
+  const wEthBalance = useWstWEthBalance(accountAddress);
 
   if (wEthBalance === undefined) {
     return null; 

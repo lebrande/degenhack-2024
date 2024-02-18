@@ -1,14 +1,9 @@
+import { erc20Abi } from "viem";
 import { type BaseError, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
-import FixedStakeRate from '../../protocol/artifacts/contracts/FixedStakeRate.sol/FixedStakeRate.json'
+import { WSTETH_ADDRESS } from "../contracts/wstETH";
 import { FIXED_STAKE_RATE_ADDRESS } from "../contracts/FixedStakeRate";
 
-interface Args {
-  depositAmount: bigint;
-}
-
-export const useOpenFixedStakeRatePosition = ({
-  depositAmount,
-}: Args) => {
+export const useApproveOpenPosition = (amount: bigint) => {
   const {
     data: hash,
     writeContract,
@@ -25,10 +20,13 @@ export const useOpenFixedStakeRatePosition = ({
 
   const execute = () => {
     writeContract({
-      abi: FixedStakeRate.abi,
-      address: FIXED_STAKE_RATE_ADDRESS,
-      functionName: 'openPosition',
-      args: [depositAmount],
+      abi: erc20Abi,
+      address: WSTETH_ADDRESS,
+      functionName: 'approve',
+      args: [
+        FIXED_STAKE_RATE_ADDRESS,
+        amount,
+      ],
     });
   }
 

@@ -1,21 +1,30 @@
-import { formatEther } from 'viem';
+import { Address, formatEther } from 'viem';
 import { Box, Card, CardBody, CardHeader, Heading, Stack, StackDivider, Text } from '@chakra-ui/react';
 import { useWEthBalance } from '../hooks/useWEthBalance';
 import { useWstWEthBalance } from '../hooks/useWstWEthBalance';
-import { FIXED_STAKE_RATE_ADDRESS } from '../contracts/FixedStakeRate';
 import { useSuppliedWstEthBalance } from '../hooks/useSuppliedWstEthBalance';
 import { useBorrowedWEthBalance } from '../hooks/useBorrowedWEthBalance';
 
-export const Account = () => {
-  const wEthBalance = useWEthBalance(FIXED_STAKE_RATE_ADDRESS);
-  const wstEthBalance = useWstWEthBalance(FIXED_STAKE_RATE_ADDRESS);
-  const suppliedWstEthBalance = useSuppliedWstEthBalance(FIXED_STAKE_RATE_ADDRESS);
-  const borrowedWEthBalance = useBorrowedWEthBalance(FIXED_STAKE_RATE_ADDRESS);
+interface Props {
+  accountAddress: Address;
+  title: string;
+}
+
+export const Account = ({
+  accountAddress,
+  title,
+}: Props) => {
+  const wEthBalance = useWEthBalance(accountAddress);
+  const wstEthBalance = useWstWEthBalance(accountAddress);
+  const suppliedWstEthBalance = useSuppliedWstEthBalance(accountAddress);
+  const borrowedWEthBalance = useBorrowedWEthBalance(accountAddress);
 
   return (
     <Card>
       <CardHeader>
-        <Heading size='md'>Account</Heading>
+        <Heading size='md'>
+          {title}
+        </Heading>
       </CardHeader>
 
       <CardBody>
@@ -25,7 +34,7 @@ export const Account = () => {
               Addresses:
             </Heading>
             <Text pt='2' fontSize='sm'>
-              {FIXED_STAKE_RATE_ADDRESS}
+              {accountAddress}
             </Text>
           </Box>
           <Box>

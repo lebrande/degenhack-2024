@@ -1,17 +1,8 @@
 import { Button, Card, CardBody, CardHeader, Heading, Stack, StackDivider } from "@chakra-ui/react";
-import { DepositControl } from "./DepositControl";
-import { useOpenFixedStakeRatePosition } from "../hooks/useOpenFixedStakeRatePosition";
-import { useState } from "react";
-import { Address, parseEther } from "viem";
+import { useApproveOpenPosition } from "../hooks/useApproveOpenPosition";
+import { parseEther } from "viem";
 
-interface Props {
-  accountAddress: Address;
-}
-
-export const FixedStakeRate = ({
-  accountAddress,
-}: Props) => {
-  const [depositAmount, setDepositAmount] = useState(0);
+export const ApproveOpenPosition = () => {
   const {
     execute,
     hash,
@@ -19,32 +10,22 @@ export const FixedStakeRate = ({
     isConfirmed,
     isConfirming,
     error,
-  } = useOpenFixedStakeRatePosition({
-    depositAmount: parseEther(depositAmount.toString()),
-  });
-
-  console.log(error);
-  
+  } = useApproveOpenPosition(parseEther('99999999999999'));
 
   return (
     <Card>
       <CardHeader>
-        <Heading size='md'>Fixed Rate Leveraged Staking</Heading>
+        <Heading size='md'>Approve Open Position</Heading>
       </CardHeader>
 
       <CardBody>
         <Stack divider={<StackDivider />} spacing='4'>
-          <DepositControl
-            depositAmount={depositAmount}
-            setDepositAmount={setDepositAmount}
-            accountAddress={accountAddress}
-          />
           <Button
             isLoading={isPending}
             colorScheme='blue'
             onClick={execute}
           >
-            {isPending ? 'Confirming...' : 'Open position'}
+            {isPending ? 'Confirming...' : 'Approve'}
           </Button>
           {hash && <div>Transaction Hash: {hash}</div>}
           {isConfirming && <div>Waiting for confirmation...</div>}

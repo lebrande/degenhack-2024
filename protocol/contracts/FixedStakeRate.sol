@@ -37,7 +37,7 @@ contract FixedStakeRate is FlashLoanSimpleReceiverBase {
     address payable owner;
     address constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
     address constant wstETH = 0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0;
-    uint16 constant MAX_LTV = 7850; // 4 decimals - 0.7850
+    uint24 constant MAX_LTV = 7850; // 4 decimals - 0.7850
 
     // Uniswap pool fee - 0.3%
     uint24 public constant poolFee = 3000;
@@ -64,7 +64,7 @@ contract FixedStakeRate is FlashLoanSimpleReceiverBase {
 
         IERC20(asset).approve(address(POOL), amountOwed * 999);
 
-        POOL.supply(asset, amount, address(this), 0);
+        POOL.supply(asset, amount / 2, owner, 0);
 
         POOL.borrow(
             WETH,
@@ -73,7 +73,7 @@ contract FixedStakeRate is FlashLoanSimpleReceiverBase {
             (amount * 10) / 100,
             2,
             0,
-            address(this)
+            owner
         );
 
         dev_lastSwapWstEth = this.swapWEthToWstEth(
@@ -83,9 +83,11 @@ contract FixedStakeRate is FlashLoanSimpleReceiverBase {
         return true;
     }
 
-    function requestFlashLoan(address _token, uint256 _amount) public {
+    function openPosition(uint256 _amount) public {
+        IERC20(wstETH).transferFrom(msg.sender, address(this), _amount);
+
         address receiverAddress = address(this);
-        address asset = _token;
+        address asset = wstETH;
         uint256 amount = _amount;
         bytes memory params = "";
         uint16 referralCode = 0;
@@ -121,7 +123,7 @@ contract FixedStakeRate is FlashLoanSimpleReceiverBase {
     function swapWEthToWstEth(
         uint256 amountIn
     ) external returns (uint256 amountOut) {
-        wEthToken.approve(address(swapRouter), amountIn * 999);
+        wEthToken.approve(address(swapRouter), amountIn);
 
         ISwapRouter.ExactInputSingleParams memory params = ISwapRouter
             .ExactInputSingleParams({
