@@ -42,18 +42,20 @@ const Form = ({
 }: FormProps) => {
   return (
     <SimpleGrid columns={2} spacing={10}>
-      <Account
+      {/* <Account
         accountAddress={FIXED_STAKE_RATE_ADDRESS}
         title="Contract balances"
-      />
+      /> */}
       <Account
         accountAddress={accountAddress}
         title="Wallet balances"
       />
-      <ApproveOpenPosition />
-      <ApproveDebtDelegation />
-      <OpenFixedStakeRatePosition accountAddress={accountAddress} />
-      <RevertSwap />
+      <Box>
+        <ApproveOpenPosition />
+        <ApproveDebtDelegation />
+        <OpenFixedStakeRatePosition accountAddress={accountAddress} />
+      </Box>
+      {/* <RevertSwap /> */}
     </SimpleGrid>
   );
 }
